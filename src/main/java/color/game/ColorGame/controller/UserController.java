@@ -5,8 +5,15 @@ import color.game.ColorGame.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
+import java.util.HashMap;
+import org.springframework.http.HttpStatus;
+import java.util.List;
+
+
 
 import java.util.Optional;
+@CrossOrigin(origins = "http://localhost:4200")
 
 @RestController
 @RequestMapping("/api/users")
@@ -19,13 +26,23 @@ public class UserController {
     public ResponseEntity<User> register(@RequestBody User user) {
         return ResponseEntity.ok(userService.register(user));
     }
+    @GetMapping("/all") // Endpoint to get all users
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) {
-        Optional<User> user = userService.login(email, password);
+    public ResponseEntity<Map<String, String>> login(@RequestBody User loginUser) {
+        Optional<User> user = userService.login(loginUser.getEmail(), loginUser.getPassword());
+        Map<String, String> response = new HashMap<>();
         if (user.isPresent()) {
-            return ResponseEntity.ok("Login successful");
+            response.put("message", "Login successful");
+            response.put("role", user.get().getRole());
+            return ResponseEntity.ok(response);
         }
-        return ResponseEntity.status(401).body("Invalid credentials");
-    }
-}
+        response.put("message", "Invalid credentials");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }}
+
+

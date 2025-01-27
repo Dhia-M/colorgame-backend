@@ -11,9 +11,19 @@ public class User {
     private Long id;
 
     private String name;
+    @Column(name = "last_name") // Explicit mapping
+
     private String lastName;
     private String email;
     private String password;
+    private String role = "user";
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
     public Long getId() {
         return id;
     }
